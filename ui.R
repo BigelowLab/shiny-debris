@@ -12,10 +12,13 @@ ui <- bootstrapPage(
         # dev warning
         shiny::tags$textarea(id="message", rows=1, cols=30,
                              "** Under Development **"),
-        #xcast - date, opacity and color
+
+        if(DEVMODE) shiny::selectInput("xcast_color", "Colors",
+                           choices = PALNAMES,
+                           selected = PALNAME) else NULL,
         shiny::selectInput("xcast_version", "Debris Type",
-            choices = unname(GLOBALS$vchoices),
-            selected = unname(GLOBALS$vchoices[1])),
+                          choices = unname(GLOBALS$vchoices),
+                          selected = unname(GLOBALS$vchoices[1])),
         shiny::sliderInput("xcast_date", "Date",
                            min = GLOBALS$date_range[1],
                            max = GLOBALS$date_range[2],

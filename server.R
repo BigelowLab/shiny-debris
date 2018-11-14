@@ -1,6 +1,9 @@
 
 server <- function(input, output, session){
 
+    rx_xcast_color <- reactive({
+        input$xcast_color
+    })
     rx_xcast_date <- reactive({
         input$xcast_date
     })
@@ -16,19 +19,22 @@ server <- function(input, output, session){
 
     add_raster <- function(map,
                            dt = GLOBALS$date,
-                           version = GLOBALS$version){
+                           version = GLOBALS$version,
+                           color = GLOBALS$xcast_color){
         if (DEVMODE) cat("add_raster date:", format(dt, "%Y-%m-%d"), " version:", version, "\n")
         x <- read_xcast(dt = dt, version = version)
+        pal <- pal_from_name(isolate(input$xcast_color))
         map %>%
             leaflet::addRasterImage(x,
                                     group = "xcast",
                                     project = FALSE,
                                     opacity = GLOBALS$xcast_opacity,
-                                    colors = GLOBALS$xcast_pal)
+                                    colors = pal)
     }
-    add_legend <- function(map){
+    add_legend <- function(map, color = GLOBALS$xcast_color){
         if (DEVMODE) cat("add_legend\n")
-        lgnd <- legend_from_pal()
+        pal <- pal_from_name(isolate(input$xcast_color))
+        lgnd <- legend_from_pal(pal)
         map %>%
             leaflet::addLegend("bottomleft",
                                 colors = lgnd$colors,
@@ -76,7 +82,7 @@ server <- function(input, output, session){
     #     } # end of content() function
     # )
 
-    observeEvent(c(input$xcast_date, input$xcast_version),{
+    observeEvent(c(input$xcast_date, input$xcast_version, input$xcast_color),{
         updateActionButton(session, "update_button",
                            label = "   ** Click To Update ** ",
                            icon = icon("refresh"))
@@ -88,9 +94,10 @@ server <- function(input, output, session){
             clearControls() %>%
             clearGroup("xcast") %>%
             clearGroup("points")   %>%
-            add_legend() %>%
+            add_legend(color = isolate(input$xcast_color)) %>%
             add_raster(dt = isolate(input$xcast_date),
-                       version = version_choice(isolate(input$xcast_version)) )
+                       version = version_choice(isolate(input$xcast_version)),
+                       color = isolate(input$xcast_color))
         if (isolate(rx_show_obs())) {
             obs <- filter_obs(date = isolate(input$xcast_date),
                               version = version_choice(isolate(input$xcast_version)) )

@@ -114,6 +114,10 @@ get_bb <- function(input) {
 DEVMODE    = interactive()
 NPAL       = 9
 PALNAME    = 'Oranges'
+PALNAMES   <- c("BuGn", "BuPu", "GnBu", "OrRd", "PuBu", "PuBuGn",
+                "PuRd", "RdPu", "YlGn", "YlGnBu", "YlOrBr", "YlOrRd",
+                "Blues", "Greens", "Greys", "Oranges", "Purples", "Reds")
+
 COLOR_LUT  = c("None" = NA, Yellow = "#FFFF00", Orange = "#FFA500",
              Blue = "#0000FF", White = "#FFFFFF")
 date_range <- range(list_xcast(form = 'date'))
@@ -125,6 +129,7 @@ GLOBALS = list(
                    'v1.00' = 'All debris',
                    'v1.01' = 'Just styrofoam'),
     npal       = NPAL,
+    xcast_color = PALNAME,
     xcast_pal  =  leaflet::colorNumeric(RColorBrewer::brewer.pal(NPAL,PALNAME),
                                         domain = c(0,1),
                                         na.color = "transparent"),
@@ -154,6 +159,13 @@ filter_obs <- function(x = OBS,
     if (version == 'v1.01') x <- x %>%
         dplyr::filter(`Debris Type` == 'Styrofoam')
     x
+}
+
+
+pal_from_name <- function(name = GLOBALS$xcast_color, npal = GLOBALS$npal){
+    leaflet::colorNumeric(RColorBrewer::brewer.pal(npal,name),
+                          domain = c(0,1),
+                          na.color = "transparent")
 }
 
 #' Given a palette function, generate the colors, values and labels for a
