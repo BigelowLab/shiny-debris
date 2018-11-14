@@ -13,7 +13,7 @@ ui <- bootstrapPage(
         shiny::tags$textarea(id="message", rows=1, cols=30,
                              "** Under Development **"),
 
-        if(DEVMODE) shiny::selectInput("xcast_color", "Colors",
+        if(TRUE) shiny::selectInput("xcast_color", "Colors",
                            choices = PALNAMES,
                            selected = PALNAME) else NULL,
         shiny::selectInput("xcast_version", "Debris Type",
